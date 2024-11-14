@@ -1,24 +1,20 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
-import * as dotenv from 'dotenv';
-dotenv.config();
+// src/ormconfig.ts
 
-export const dataSourceOptions: DataSourceOptions = {
-  type: 'mysql',
-  host: 'localhost',
-  port: 3306,
-  username: 'root',
-  password: '1234',
-  database: 'masar',
-  // entities: [Episode],
-  // autoLoadEntities: true,
-  synchronize: true, // todo: not safe for production and we should use migrations instead
-  // subscribers: [__dirname + '/domain/subscribers/*.subscriber{.ts,.js}'],
-  migrations: ['src/migration/*{.ts,.js}'],
-  entities: ['src/**/*.entity{.ts,.js}'],
+import { DataSource } from 'typeorm';
+import { User } from 'src/users/users.entity';
+import { Article } from 'src/article/article.entity';
+import { ConfigService } from '@nestjs/config'; // If you want to use environment variables
+
+export default {
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    username: 'postgres',
+    password: '1234',
+    database: 'postgres',
+    entities: [User, Article],
+    migrations: ['src/migration/**/*.ts'],
+    autoLoadEntities: true,
+    synchronize: false,
+    logging: true,
 };
-
-const dataSource = new DataSource(dataSourceOptions);
-dataSource.initialize();
-
-export default dataSource;
-
