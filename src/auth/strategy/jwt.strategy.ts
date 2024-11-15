@@ -10,13 +10,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
       secretOrKey: configService.get<string>('DeemaShs1999'),
     });
   }
 
-  async validate(payload: JwtPayload) {
-    // You can add your validation logic here, e.g., find the user by the id
+  async validate(payload: any) {
     return { userId: payload.sub, username: payload.username };
   }
 }

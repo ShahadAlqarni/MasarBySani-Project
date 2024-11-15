@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
 export class Article {
@@ -10,4 +10,14 @@ export class Article {
 
   @Column('text')
   body: string;
+
+  /*
+  @OneToMany(() => Comment, (comment) => comment.article)
+  comments: Comment[];
+
+  @OneToMany(() => Like, (like) => like.article)
+  likes: Like[];
+*/
+  @Column({ default: new Date() })
+  createdAt: Date;
 }

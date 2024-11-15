@@ -1,7 +1,7 @@
 // src/users/user.controller.ts
-/*
+
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
-import { UserService } from './users.entity';
+import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserProfileDto } from './dto/UserProfileDto.dto';
 
@@ -22,12 +22,11 @@ export class UserController {
 
     // Create a DTO object containing only the name and email properties
     const userProfileDto = new UserProfileDto();
-    userProfileDto.name = user.name;
-    userProfileDto.email = user.email;
+   // userProfileDto.name = user.name;
+    // userProfileDto.email = user.email;
 
     // Return the DTO object as the API response
     return userProfileDto;
   }
     
 }
-*/

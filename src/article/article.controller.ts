@@ -11,37 +11,24 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 export class ArticleController {
 constructor(private readonly articleService: ArticleService) {}
       
+@Post()
+async createArticle(@Body() createArticleDto: CreateArticleDto) {
+  return this.articleService.createArticle(createArticleDto);
+}
+
 @Get()
-async getArticles(@Query() paginationDto: PaginationDto): Promise<Article[]> {
-  return this.articleService.findAll(paginationDto);
+async findAll() {
+  return this.articleService.findAll();
 }
 
   // create article
   // Only logged-in users can create articles
   @UseGuards(JwtAuthGuard)
-  @Post()
+  @Post("test")
   @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Body() createArticleDto: CreateArticleDto,
-    @Request() req,
-  ): Promise<Article> {
-    return this.articleService.createArticle(createArticleDto, req.user.userId);
+  create(@Body() createArticleDto: CreateArticleDto, @Request() req) {
+    return this.articleService.createArticle(req.user.userId);
   }
-  /*
-  // get all articles
-  @Get()
-  async findAll(): Promise<Article[]> {
-    return this.articleService.findAll();
-  }
-*/
-  /*
-  // Get an article by ID
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Article> {
-    return this.articleService.findOne(Number(id));
-  }
-*/
-
 
   // Delete an article
   @Delete(':id')
@@ -49,18 +36,5 @@ async getArticles(@Query() paginationDto: PaginationDto): Promise<Article[]> {
   async remove(@Param('id') id: string): Promise<void> {
     return this.articleService.deleteArticle(Number(id));
   }
-
-
-/*
-async function seedArticles() {
-    const articles = Array.from({ length: 1000 }).map(() => ({
-        title: faker.lorem.sentence(),
-        content: faker.lorem.paragraph(),
-        authorId: randomUserId, // randomly assign from existing users
-    }));
-
-    await articleRepository.save(articles);
-  }
-    */
    
 }

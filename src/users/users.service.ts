@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
+
   getUserById(userId: number) {
     throw new Error('Method not implemented.');
   }
@@ -16,20 +17,22 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const { username, email, password } = createUserDto;
+    // Register a new user
+    async create(createUserDto: CreateUserDto): Promise<User> {
+      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+      const user = this.userRepository.create({
+        ...createUserDto,
+        password: hashedPassword,
+      });
+      return this.userRepository.save(user);
+    }
     
-    // Hash the password before storing it
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    const newUser = this.userRepository.create({
-      username,
-      email,
-      password: hashedPassword,
-    });
-    
-    return this.userRepository.save(newUser);
-  }
+    // Hash the password
+    async hashPassword(password: string): Promise<string> {
+      return bcrypt.hash(password, 10);
+    }
 
-  // Add more user-related methods like finding users, etc.
+    async validatePassword(password: string, hash: string): Promise<boolean> {
+      return bcrypt.compare(password, hash);
+    }
 }
