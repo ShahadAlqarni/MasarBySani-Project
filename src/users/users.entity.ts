@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn,  CreateDateColumn} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
+import { Follower } from '../followers/followers.entity';
 
 @Entity()
 export class User {
@@ -8,10 +9,16 @@ export class User {
     @Column({ unique: true })
     username: string;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
     @Column()
     password: string;
+
+    @OneToMany(() => Follower, (follower) => follower.following)
+    followers: Follower[];
+  
+    @OneToMany(() => Follower, (follower) => follower.follower)
+    following: Follower[];
     
 }

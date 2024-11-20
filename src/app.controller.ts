@@ -17,14 +17,4 @@ export class AppController {
     const sum = Number(num1);
     return {total:sum};
   }
-   
-  /*
-  @Post('/hello')
-  postHello(@Body('name') name:string, @Req() req, @Res()  res ){
-    //res.send(this.appService.getHello())
-    res.send(req.Body);
-   // return query;
-  }
-   */
-  
 }

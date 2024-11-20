@@ -71,3 +71,21 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+
+#### 1. **Follow a user**
+   **POST** `/follower/:userId`  
+   Allows the logged-in user to follow another user by their `userId`.  
+
+   **Request:**  
+   - Header: `Authorization: Bearer <JWT>`
+   - Params: `userId` (ID of the user to follow)
+
+   **Response:**  
+   ```json
+   {
+       "status": "success",
+       "message": "You are now following user with ID <userId>."
+   }
+
+   

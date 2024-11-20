@@ -1,32 +1,35 @@
 // src/users/user.controller.ts
 
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, UseGuards, Req } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserProfileDto } from './dto/UserProfileDto.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { User } from './users.entity';
 
 
 @Controller('users')
 export class UserController {
+  dataSource: any;
   constructor(private userService: UserService) {}
 
-  @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  
+  @Get('/users/:name')
+  async getUserByName(@Param('name') name: string) {
+    console.time('queryTime');  // Start measuring query time
+    const user = await this.dataSource
+      .getRepository(User)
+      .findOneBy({ name });
+    console.timeEnd('queryTime');  // Log the query time
+    return user;
   }
+  
 
-  // Define an API endpoint to return a subset of user data
-  @Get(':id/profile')
-  getUserProfile(@Param('id') userId: number): UserProfileDto {
-    const user = this.userService.getUserById(userId);
 
-    // Create a DTO object containing only the name and email properties
-    const userProfileDto = new UserProfileDto();
-   // userProfileDto.name = user.name;
-    // userProfileDto.email = user.email;
-
-    // Return the DTO object as the API response
-    return userProfileDto;
+  @Get('/myProfile')
+  @UseGuards(JwtAuthGuard)
+  async getMyProfile(@Req() req) {
+    return this.userService.getUserById(req.user.id);
   }
     
 }

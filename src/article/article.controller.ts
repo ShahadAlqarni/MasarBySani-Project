@@ -1,16 +1,25 @@
 import { Controller, Post, Body, UseGuards, HttpCode, HttpStatus,
-   Get, Param,Request,Patch,Delete,
-   Query} from '@nestjs/common';
+   Get, Param,Request,Delete} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './create-article.dto';
-import { Article } from './article.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { Article } from './article.entity';
 
 @Controller('article')
 export class ArticleController {
+  dataSource: any;
 constructor(private readonly articleService: ArticleService) {}
       
+@Get('/users/:name')
+async getUserByName(@Param('name') name: string) {
+  console.time('queryTime');  // Start measuring query time
+  const user = await this.dataSource
+    .getRepository(Article)
+    .findOneBy({ name });
+  console.timeEnd('queryTime');  // Log the query time
+  return user;
+}
+
 @Post()
 async createArticle(@Body() createArticleDto: CreateArticleDto) {
   return this.articleService.createArticle(createArticleDto);
@@ -36,5 +45,7 @@ async findAll() {
   async remove(@Param('id') id: string): Promise<void> {
     return this.articleService.deleteArticle(Number(id));
   }
+
+
    
 }

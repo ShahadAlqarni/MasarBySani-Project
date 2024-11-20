@@ -1,38 +1,63 @@
 // src/users/user.service.ts
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable, Post } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
 import { User } from './users.entity';
-import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { faker } from '@faker-js/faker';
 
 @Injectable()
 export class UserService {
+  constructor(private readonly dataSource: DataSource) { }
+
+  @Post('/fillCustomers')
+  async fillCustomers() {
+    const customersRepo: Repository<User> =
+      this.dataSource.getRepository(User);
+
+    // Choose a suitable chunk size
+    const chunkSize = 10_000;
+    const totalUsers = 1_000_000;
+    const users = [];
+
+    for (let i = 0; i < totalUsers; i++) {
+      const randomName = faker.internet.userName();
+      const randomEmail = faker.internet.email();
+      const randomCity = faker.location.city();
+
+      users.push({
+        name: randomName,
+        email: randomEmail,
+        city: randomCity,
+      });
+
+      // Insert in chunks
+      if (users.length === chunkSize) {
+        console.log('Inserting chunk Number:', i / chunkSize);
+        console.log('Percentage done:', (i / totalUsers) * 100 + '%');
+        await customersRepo.insert(users);
+        users.length = 0; // clear the array
+      }
+    }
+
+    // Insert any remaining users
+    if (users.length > 0) {
+      await customersRepo.insert(users);
+    }
+
+    return 'done';
+  }
 
   getUserById(userId: number) {
     throw new Error('Method not implemented.');
   }
-  constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-  ) {}
 
-    // Register a new user
-    async create(createUserDto: CreateUserDto): Promise<User> {
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-      const user = this.userRepository.create({
-        ...createUserDto,
-        password: hashedPassword,
-      });
-      return this.userRepository.save(user);
-    }
-    
-    // Hash the password
-    async hashPassword(password: string): Promise<string> {
-      return bcrypt.hash(password, 10);
-    }
+  // Hash the password
+  async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 10);
+  }
 
-    async validatePassword(password: string, hash: string): Promise<boolean> {
-      return bcrypt.compare(password, hash);
-    }
+  async validatePassword(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
+  }
+
 }

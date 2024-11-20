@@ -1,11 +1,9 @@
 //auth.service.ts
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/users.entity';
 import { AccessToken } from './types/AccessToken';
 import { UserService } from 'src/users/users.service';
-import { RegisterRequestDto } from './dtos/register-request.dto';
 
 @Injectable()
 export class AuthService {
