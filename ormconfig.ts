@@ -1,6 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import * as dotenv from 'dotenv';
-import { User } from 'src/auth/decorators/user.decorator';
 dotenv.config();
 
 export const dataSourceOptions: DataSourceOptions = {

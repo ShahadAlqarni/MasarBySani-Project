@@ -6,24 +6,34 @@ import { AppController } from 'src/app.controller';
 import { AppService } from 'src/app.service';
 import { FollowersModule } from './followers/followers.module';
 import { FollowerController } from './followers/followers.controller';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Article } from './article/article.entity';
+import { User } from './users/users.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '1234',
-      database: 'postgres',
-      autoLoadEntities: true,
-      entities: ["dist/**/*.entity{.ts,.js}"],
-      synchronize: true,
-      dropSchema:true 
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
-    ArticleModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: +configService.get<string>('DB_PORT'),
+        username: configService.get<string>('DB_USER', 'postgres'),
+        password: configService.get<string>('DB_PASSWORD'), 
+        database: configService.get<string>('DB_NAME'),
+        entities: [User, Article, Comment],
+        autoLoadEntities: false,
+        synchronize: false,
+      }),
+    }),
     UserModule,
-    AppModule,
+    ArticleModule,
+    AuthModule,
     FollowersModule,
   ],
   controllers: [AppController, FollowerController, FollowerController],
